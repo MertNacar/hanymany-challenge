@@ -1,26 +1,131 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <h1>What car are you shipping?</h1>
+    <h4>Select vehicle year, make and model</h4>
+    <div>
+      <Dropdown
+        name="year"
+        :options="years"
+        :onChangeDropdown="handleChangeDropdown"
+      />
+      <Dropdown
+        name="make"
+        :options="makes"
+        :onChangeDropdown="handleChangeDropdown"
+      />
+      <Dropdown
+        name="model"
+        :options="models"
+        :onChangeDropdown="handleChangeDropdown"
+      />
+    </div>
+    <div v-if="err">Unexpected error occured.</div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import api from "@/api";
+import Dropdown from "@/components/Dropdown.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    Dropdown,
+  },
+  data() {
+    return {
+      years: [],
+      makes: [],
+      models: [],
+      vehicle: {
+        year: null,
+        make: null,
+        model: null,
+      },
+      err: false,
+    };
+  },
+  created() {
+    this.initializeApp();
+  },
+  methods: {
+    initializeApp() {
+      this.err = false;
+      api.vehicles
+        .getYears()
+        .then((data) => {
+          this.years = data.map((item) => ({
+            value: item,
+            text: item,
+          }));
+        })
+        .catch(() => {
+          this.err = true;
+        });
+    },
+    handleChangeDropdown({ event, key }) {
+      this.vehicle = { ...this.vehicle, [key]: event.target.value };
+    },
+  },
+  watch: {
+    "vehicle.year": {
+      handler: function (newVal) {
+        if (newVal) {
+          this.err = false;
+          api.vehicles
+            .getMakes({ year: newVal })
+            .then((data) => {
+              this.makes = data.map((item) => ({
+                value: item.name,
+                text: item.name,
+              }));
+            })
+            .catch(() => {
+              this.err = true;
+            });
+        }
+      },
+      immediate: true,
+    },
+    "vehicle.make": {
+      handler: function (newVal) {
+        if (newVal) {
+          const { year } = this.vehicle;
+          this.err = false;
+          api.vehicles
+            .getModels({ year, make: newVal })
+            .then((data) => {
+              this.models = data.map((item) => ({
+                value: item.original_model,
+                text: item.original_model,
+              }));
+            })
+            .catch(() => {
+              this.err = true;
+            });
+        }
+      },
+      immediate: true,
+    },
+  },
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1,
+h4 {
+  padding: 1rem;
+}
+
+select {
+  padding: 0.5rem;
+  margin: 1rem;
 }
 </style>
