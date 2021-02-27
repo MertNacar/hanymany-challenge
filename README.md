@@ -1,4 +1,4 @@
-# hello
+# hanymany-challenge
 
 ## Project setup
 ```
