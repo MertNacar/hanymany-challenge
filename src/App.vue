@@ -91,7 +91,7 @@ export default {
 
 <style lang="scss">
 // variables
-$primary: rgb(173, 88, 88);
+$primary: rgb(190, 83, 83);
 $bg-primary: rgb(68, 62, 62);
 
 // tags
@@ -111,7 +111,7 @@ h3 {
 }
 
 select {
-  color: white;
+  color: $primary;
   width: 250px;
   padding: 1rem;
   margin: 0.5rem;
