@@ -100,12 +100,12 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  color: white;
   background-color: $bg-primary;
 }
 
 h1,
 h3 {
+  color: white;
   margin-top: 0.2rem;
   margin-bottom: 0.2rem;
 }
