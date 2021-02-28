@@ -1,5 +1,6 @@
 # hanymany-challenge
 
+Hanymany-challenge is single page vue-3 project that includes crud operations and simple design with scss.
 ## Project setup
 ```
 npm install
