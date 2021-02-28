@@ -19,7 +19,7 @@
         :onChangeDropdown="handleChangeDropdown"
       />
     </div>
-    <div class="err-text" v-if="err">Unexpected error occured.</div>
+    <div class="err-text mt-6" v-if="err">Unexpected error occured.</div>
   </div>
 </template>
 
@@ -60,19 +60,12 @@ export default {
         } else if (make && make !== oldMakes) {
           const { year } = vehicle;
           store.commit("vehicles/clearModels");
-          store
-            .dispatch("vehicles/getModels", {
-              year,
-              make,
-            })
-            .catch(() => {
-              err.value = true;
-            });
+          store.dispatch("vehicles/getModels", { year, make }).catch(() => {
+            err.value = true;
+          });
         }
       },
-      {
-        immediate: true,
-      }
+      { immediate: true }
     );
 
     watch(
