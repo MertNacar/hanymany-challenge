@@ -4,7 +4,7 @@
     :disabled="vehicles[name].length === 0"
     @change="(event) => onChangeDropdown({ event, key: objKey })"
   >
-    <option value="default">Select...</option>
+    <option value="default">Select {{ objKey }}</option>
     <option v-for="(item, i) in vehicles[name]" :key="i" :value="item.value">
       {{ item.text }}
     </option>

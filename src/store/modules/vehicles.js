@@ -59,7 +59,7 @@ const mutations = {
   },
   setMakes: (state, { makes }) => {
     state.makes = makes.map((item) => ({
-      value: item.name,
+      value: item.id,
       text: item.name,
     }));
   },

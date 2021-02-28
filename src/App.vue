@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column justify-center align-center mt-6">
     <h1>What car are you shipping?</h1>
-    <h4>Select vehicle year, make and model</h4>
+    <h3>Select vehicle year, make and model</h3>
     <div class="mt-6">
       <Dropdown
         name="years"
@@ -97,9 +97,11 @@ export default {
 </script>
 
 <style lang="scss">
+// variables
 $primary: rgb(173, 88, 88);
 $bg-primary: rgb(68, 62, 62);
 
+// tags
 html,
 body {
   margin: 0;
@@ -110,13 +112,9 @@ body {
 }
 
 h1,
-h4 {
+h3 {
   margin-top: 0.2rem;
   margin-bottom: 0.2rem;
-}
-
-.mt-6 {
-  margin-top: 3rem;
 }
 
 select {
@@ -128,22 +126,24 @@ select {
   border-radius: 12px;
   border: 2px solid $primary;
   background-color: $bg-primary;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("./assets/icons/arrow-down.png") no-repeat 95% center;
+  background-size: 28px 22px;
 }
 
-input:focus,
-select:focus,
-button:focus {
+select:focus {
   box-shadow: 0 0 2pt 1pt $primary;
   outline: none;
 }
 
-input::placeholder,
-select::placeholder,
-button::placeholder {
+select::placeholder {
   opacity: 0.8;
   color: white;
 }
 
+// layout
 .d-flex {
   display: -webkit-box;
   display: -moz-box;
@@ -169,6 +169,12 @@ button::placeholder {
   align-items: center;
 }
 
+//spacing
+.mt-6 {
+  margin-top: 3rem;
+}
+
+//custom
 .err-text {
   color: red;
 }

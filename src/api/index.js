@@ -9,7 +9,7 @@ export default {
       return get({ endpoint: `makes/`, query: `?year=${year}` })
     },
     getModels: ({ year, make }) => {
-      return get({ endpoint: `/`, query: `?year=${year}&make=${make}` })
+      return get({ endpoint: `/`, query: `?year=${year}&vehicle_make_id=${make}` })
     }
   }
 }
