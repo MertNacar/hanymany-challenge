@@ -4,27 +4,28 @@
     <h4>Select vehicle year, make and model</h4>
     <div>
       <Dropdown
-        name="year"
-        :options="years"
+        name="years"
+        objKey="year"
         :onChangeDropdown="handleChangeDropdown"
       />
       <Dropdown
-        name="make"
-        :options="makes"
+        name="makes"
+        objKey="make"
         :onChangeDropdown="handleChangeDropdown"
       />
       <Dropdown
-        name="model"
-        :options="models"
+        name="models"
+        objKey="model"
         :onChangeDropdown="handleChangeDropdown"
       />
     </div>
-    <div v-if="err">Unexpected error occured.</div>
+    <div class="err-text" v-if="err">Unexpected error occured.</div>
   </div>
 </template>
 
 <script>
-import api from "@/api";
+import { ref, reactive, watch } from "vue";
+import { useStore } from "vuex";
 import Dropdown from "@/components/Dropdown.vue";
 
 export default {
@@ -32,81 +33,65 @@ export default {
   components: {
     Dropdown,
   },
-  data() {
-    return {
-      years: [],
-      makes: [],
-      models: [],
-      vehicle: {
-        year: null,
-        make: null,
-        model: null,
-      },
-      err: false,
+  setup() {
+    const store = useStore();
+    let vehicle = reactive({
+      year: null,
+      make: null,
+      model: null,
+    });
+    let err = ref(false);
+
+    store.dispatch("vehicles/getYears");
+
+    const handleChangeDropdown = ({ event, key }) => {
+      Object.assign(vehicle, { ...vehicle, [key]: event.target.value });
     };
-  },
-  created() {
-    this.initializeApp();
-  },
-  methods: {
-    initializeApp() {
-      this.err = false;
-      api.vehicles
-        .getYears()
-        .then((data) => {
-          this.years = data.map((item) => ({
-            value: item,
-            text: item,
-          }));
-        })
-        .catch(() => {
-          this.err = true;
-        });
-    },
-    handleChangeDropdown({ event, key }) {
-      this.vehicle = { ...this.vehicle, [key]: event.target.value };
-    },
-  },
-  watch: {
-    "vehicle.year": {
-      handler: function (newVal) {
-        if (newVal) {
-          this.err = false;
-          api.vehicles
-            .getMakes({ year: newVal })
-            .then((data) => {
-              this.makes = data.map((item) => ({
-                value: item.name,
-                text: item.name,
-              }));
+
+    watch(
+      [() => vehicle.year, () => vehicle.make],
+      ([year, make], [oldYears, oldMakes]) => {
+        if (year && year !== oldYears) {
+          store.commit("vehicles/clearMakes");
+          store.commit("vehicles/clearModels");
+          store.dispatch("vehicles/getMakes", { year }).catch(() => {
+            err.value = true;
+          });
+        } else if (make && make !== oldMakes) {
+          const { year } = vehicle;
+          store.commit("vehicles/clearModels");
+          store
+            .dispatch("vehicles/getModels", {
+              year,
+              make,
             })
             .catch(() => {
-              this.err = true;
+              err.value = true;
             });
         }
       },
-      immediate: true,
-    },
-    "vehicle.make": {
-      handler: function (newVal) {
-        if (newVal) {
-          const { year } = this.vehicle;
-          this.err = false;
-          api.vehicles
-            .getModels({ year, make: newVal })
-            .then((data) => {
-              this.models = data.map((item) => ({
-                value: item.original_model,
-                text: item.original_model,
-              }));
-            })
-            .catch(() => {
-              this.err = true;
-            });
+      {
+        immediate: true,
+      }
+    );
+
+    watch(
+      err,
+      (newErr) => {
+        if (newErr) {
+          setTimeout(() => {
+            err.value = false;
+          }, 3000);
         }
       },
-      immediate: true,
-    },
+      { immediate: true }
+    );
+
+    return {
+      vehicle,
+      err,
+      handleChangeDropdown,
+    };
   },
 };
 </script>
@@ -127,5 +112,9 @@ h4 {
 select {
   padding: 0.5rem;
   margin: 1rem;
+}
+
+.err-text {
+  color: red;
 }
 </style>
